@@ -39,7 +39,7 @@
            </div>
          </form>
          <ul class="media-list">
-           <% for (var i = user.posts.length - 1; i >= 0; i--) { %>
+           <% for (var i = 0; i < user.posts.length; i++) { %>
               <li class="media">
                 <div class="media-object pull-left">
                   <img src="https://graph.facebook.com/<%= user.posts[i].sender_id %>/picture" height="50">
