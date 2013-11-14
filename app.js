@@ -3,67 +3,25 @@ var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy
 var graph = require('fbgraph');
 var path = require('path');
-var mongoose = require('mongoose');
-
-// Set up the database
-mongoose.connect('mongodb://localhost/photoapp');
-var user_schema = mongoose.Schema({
-    _id: Number,
-    first_name: String,
-    last_name: String,
-    last_updated: Date,
-    friends: [{
-        id: String,
-        name: String
-    }],
-    posts: [{
-        time: Date,
-        sender_id: Number,
-        sender_name: String,
-        text: String
-    }],
-    photos: [{
-        url: String,
-    }],
-});
-
-var User = mongoose.model('User', user_schema);
 
 // Retrieve a user from storage
 function getUser(user_id, done) {
-    User.findOne({ _id: user_id }, function(err, user) {
-        done(null, user);
-    });
+
 }
 
 // Add a user to storage
 function addUser(profile) {
-    var user = new User({
-        _id: profile.id,
-        first_name: profile.name.givenName,
-        last_name: profile.name.familyName,
-        friends: [],
-        posts: [],
-    });
-    user.save();
-    return user;
+
 }
 
 // Add a post to a user's wall
 function addPost(user, post) {
-    User.update( {_id: user._id },
-            { $push: { posts: post } }, { upsert: true },
-            function(err, data) {
-            }
-    );
+
 }
 
+// Add a photo to the user's profile
 function addPhoto(user, photo) {
-    User.update( {_id: user._id },
-            { $push: { photos: photo } }, { upsert: true },
-            function(err, data) {
-            }
-    );
+
 }
 
 // Facebook app information
