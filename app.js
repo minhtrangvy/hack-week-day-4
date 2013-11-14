@@ -41,21 +41,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 function updateFriends(user, accessToken) {
-    graph.setAccessToken(accessToken);
-    graph.get(user._id + '/friends?fields=id,name,installed', function(err, res) {
-        var friends = [];
 
-        // Only add friends that have the application installed
-        for (var i = 0; i < res.data.length; i++) {
-            if (res.data[i].installed) {
-                friends.push(res.data[i]);
-            }
-        }
-
-        User.update({ _id: user._id}, { $set: { friends: friends } }, { upsert: true }, function(err, user) {
-            // Don't do anything
-        });
-    });
 }
 
 passport.use(new FacebookStrategy({
