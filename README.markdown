@@ -47,61 +47,35 @@ Open a terminal and enter the following command:
 
 ## Setting up the Application
 
-First, navigate to a folder where you would like to store the code.
+First, navigate to a folder (such as the desktop) where you would like to store
+the code.
 
-#### Mac/Linux
+Now, download the source code as a zip and extract it into that local folder.
 
-    cd
-    mkdir repos && cd repos
+Navigate to that folder in terminal.
 
-#### Windows
+###Windows
 
-    cd %USERPROFILE%
-    mkdir repos
-    cd repos
+Navigate to the folder in the file browser, then Shift+Right Click and select
+`Open command window here`.
 
-Now, clone the source code into a local folder.
+###Mac
 
-    git clone https://github.com/euclio/hack-week-fall-2013.git
-    cd hack-week-fall-2013
+Open a terminal and type
 
-Lastly, Install the node dependencies.
+    cd <name of path to folder>
+
+That is, you will probably have a command like
+
+    cd ~/Desktop/hack-week-day-4-master
+
+If you saved and extracted the zip folder on the desktop.
+
+Lastly, Install the node dependencies by entering the following into your
+terminal or command prompt.
 
     npm install
 
 If would like to set up Facebook integration, you should navigate to the
 [Facebook developers site](http://developers.facebook.com) and register as a
-developer. Then, create a new application
-[here](https://developers.facebook.com/apps). Go to the page created for your
-new app, and copy down the app ID and app secret. Then, edit `app.js` and change
-`FB_ID` and `FB_APP_SECRET` to the values for your application.
-
-## Running the application
-
-Assuming that you are in the main directory of the application,
-
-First, start up the database.
-
-#### Mac/Linux
-
-    sudo mongod
-
-If you get an error, you may need to run
-
-    sudo service mongodb stop
-
-Now, start nodejs.
-
-    nodejs app.js
-
-#### Windows
-
-MongoDB runs as a service on startup, so you shoudn't have to start any programs
-to use the database.
-
-Next, start nodejs.
-
-    node app.js
-
-Lastly, open up your browser and navigate to `http://localhost:3000`. You should
-see the website running locally.
+developer.
