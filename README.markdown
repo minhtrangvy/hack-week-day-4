@@ -71,7 +71,9 @@ That is, you will probably have a command like
 
 If you saved and extracted the zip folder on the desktop.
 
-Lastly, Install the node dependencies by entering the following into your
+## Install Node Dependencies and Setup Facebook Integration
+
+Lastly, install the node dependencies by entering the following into your
 terminal or command prompt.
 
     npm install
