@@ -1,27 +1,80 @@
 var express = require('express');
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy
+var passport = require('passport'); //required
+var FacebookStrategy = require('passport-facebook').Strategy //required
 var graph = require('fbgraph');
 var path = require('path');
+var mongoose = require('mongoose');
+
+//Connect to database
+mongoose.connect('mongodb://localhost/photoapp');
+var user_schema = mongoose.Schema({
+    _id: Number,
+    first_name: String,
+    last_name: String,
+    last_updated: Date,
+    friends: [{
+        id: String,
+        name: String,
+    }],
+    posts: [{
+        time: Date,
+        sender_id: Number,
+        sender_name:String,
+        text: String,
+    }],
+    photos: [{
+        url: String,
+    }],
+});
+
+//user collection (where we store user docs in the database)
+// interacts with the user_schema
+var User = mongoose.model('User',user_schema);
 
 // Retrieve a user from storage
 function getUser(user_id, done) {
-
+    User.findOne({ _id: user_id},
+        function(err,user) {
+            done(null, user); //null is error, user is data
+        });
 }
 
 // Add a user to storage
 function addUser(profile) {
+ var user = new User ({
+        _id: profile.id,
+        first_name: profile.name.givenName,
+        last_name: profile.name.familyName,
+        last_updated: new Date(),
+        friends: [],
+        posts: [],
+        photos: [],
+    });
+
+    user.save();
+    return user;
 
 }
 
 // Add a post to a user's wall
 function addPost(user, post) {
+    User.update({ _id: user._id },
+        { $push: {posts: post}},
+        { $upsert: true},
+        function(err,data){
+            //do nothing
+        });
 
 }
 
 // Add a photo to the user's profile
 function addPhoto(user, photo) {
-
+    User.update({ _id: user._id },
+        { $push: {photos: photo}},
+        { $upsert: true},
+        function(err,data){
+            //do nothing
+        });
 }
 
 // Facebook app information
@@ -41,7 +94,23 @@ passport.deserializeUser(function(id, done) {
 });
 
 function updateFriends(user, accessToken) {
+    graph.setAccessToken(accessToken);
+    graph.get(user._id + '/friends?fields=id,name,installed', 
+        function(err,res) {
+            var friends = [];
+            for (var i = 0; i < res.data.length; i++) {
+                if (res.data[i].installed) {
+                    friends.push(res.data[i]);
+                }
+            }
+            User.update({ _id: user._id},
+                        { $set: {friends:friends}},
+                        { $upsert: true},
+                        function(err,user){
+                            //do nothing
 
+                        }) //erases whatever's there
+        });
 }
 
 passport.use(new FacebookStrategy({
@@ -105,20 +174,23 @@ app.get('/', function(req, res) {
 
 app.get('/user/:id', function(req, res) {
     var id = parseInt(req.params.id);
-    if (req.user) {
-        if (req.user._id === id) {
+    if (req.user) { //is someone logged in?
+        if (req.user._id === id) { //if youre logged into the same
+            //id as the profile that youre at
             // Render user profile
             res.render('profile', { user: req.user, posts: req.user.posts });
         } else {
             getUser(req.params.id, function(err, friend) {
-                if (friend) {
+                if (friend) { //if theyre youre friend,
+                    //it's gonna show their profile
+                    //if not, it wont show the profile
                     res.render('profile', { user: friend });
                 } else {
                     res.status(404).send('Not found');
                 }
             });
         }
-    } else {
+    } else { //if not logged in, redirect
         res.redirect('/', 401);
     }
 });
@@ -151,3 +223,14 @@ app.post('/user/:user_id/upload', function(req, res) {
 });
 
 app.listen(3000);
+
+/*
+added mongo\bin to path
+made a folder in db\data
+mongod, open another terminal (order of these might be mixed up)
+db.test.findOne() or ({name:'Trang'})
+$push pushes whatever we give it onto 
+db.test.update({thing}, push, upsert) - upsert updates this
+and inserts back into the database again
+$anything is what mongo is doing, not actually being stored
+*/
